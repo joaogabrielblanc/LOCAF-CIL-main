@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - LocaFácil</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+      padding: 30px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #0b6426;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .divider {
+      margin: 20px 0;
+      border-top: 1px solid #ccc;
+    }
+
+    .google { background-color: #db4437; color: white; margin-top: 10px }  
+    .facebook { background-color: #3b5998; color: white; margin-top: 10px }
+
+    .footer {
+      font-size: 14px;
+      margin-top: 15px;
+    }
+
+    .footer a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .password-container {
+      position: relative;
+    }
+
+    .toggle-senha {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: #0b6426;
+    }
+ 
+  </style>
+</head>
+<body>
+<div class="login-container">
+  <h2>Acesse a sua conta</h2>
+  <form id="loginForm" action="processa_dados.php" method="post">
+    <input type="email" name="email" id="email" placeholder="E-mail" required>
+
+    <div class="password-container">
+  <input type="password" name="senha" id="senha" placeholder="Senha" required>
+
+    <button type="submit">Continuar</button>
+  </form>
+
+  
+
+  <div class="divider"></div>
+
+  <p>Ou conecte com</p>
+  <div class="social-buttons">
+    <button class="google" onclick="alert('Login com Google')">Google</button>
+    <button class="facebook" onclick="alert('Login com Facebook')">Facebook</button>
+  </div>
+
+  <div class="footer">
+    <p>Não tem uma conta? <a href="cadastra-se.html">Cadastre-se</a></p>
+    <p><a href="index.html">Voltar para pagina inicial</a></p>
+  </div>
+</div>

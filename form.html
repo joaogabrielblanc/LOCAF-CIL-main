@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario</title>
+</head>
+<body>
+    <h1>Formulario de contrato</h1>
+ 
+    <!---Formulario com método POST (recomendado para dados sensiveis(dados pessoas))-->
+ 
+    <form action="processa_dados.php" method="post">
+ 
+    <!--Campo de texto para nome-->
+    <label for="nome">Nome Completo</label>
+    <input type="text" id="nome" name="nome" required placeholder="Digite seu nome">
+    <br><br>
+    <!---Campo para e-mail-->
+    <label for="email">E-mail:</label>
+    <input type="email" name="email" required placeholder="exemplo@email.com.br">
+    <br><br>
+    <!--Raio buttons para gênero-->
+    <label>Gênero:</label>
+    <input type="radio" name="genero" value="masculino" required checked> Masculino
+    <input type="radio" name="genero" value="feminino"> Feminino
+    <input type="radio" name="genero" value="outro"> Outro
+    <br><br>
+    <!--Dropdown para seleção de estado-->
+    <label for="estado">Estado</label>
+    <select name="estado" required>
+        <option value="Disable select">Selecione seu estado</option>
+        <option value="SP">São Paulo</option>
+        <option value="RJ">Rio de Janeiro</option>
+        <option value="MG">Minas Gerais</option>
+        <option value="ES">Espirito Santo</option>
+    </select>
+    <!--Checkbox para newsletter-->
+    <br><br>
+    <input type="checkbox" name="comentário" value="Sim">
+    <label for="nawsletter">Desejo receber a newsletter</label>
+    <br><br>
+
+    <!--Textarea para comentários-->
+<label for="comentario">Comentario</label><br>
+<textarea name="comentario" rows="5" cols="40" placeholder="Deixe o seu feedback"></textarea>
+<br><br>
+
+<!---Botoes de ação-->
+<input type="submit" value="Enviar Dados">
+<input type="reset" value="limpar dados">
+
+
+
+<h3>Exemplo de método GET</h3>
+<form action="busca.php"></form>
+<input type="text" name="termo_busca" placeholder="Pesquisar...">
+<input type="submit" value="Buscar">
+
+
+</form>
+
+
+</body>
+</html>

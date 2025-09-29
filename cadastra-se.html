@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro - LocaFácil</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .form-container {
+      max-width: 450px;
+      width: 100%;
+      padding: 30px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .social-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .social-buttons button {
+      width: 48%;
+      padding: 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .google { background-color: #db4437; color: white;margin-top: 10px }  
+    .facebook { background-color: #3b5998; color: white;margin-top: 10px }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    input, select {
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .radio-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .radio-group label {
+      font-weight: normal;
+    }
+
+    .footer-link {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .footer-link a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .password-rules {
+      font-size: 12px;
+      color: #777;
+      margin-top: 5px;
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .password-rules li::before {
+      content: "✖ ";
+      color: red;
+    }
+
+    .password-rules li.valid::before {
+      content: "✔ ";
+      color: green;
+    }
+
+    .password-rules li.valid {
+      color: green;
+      font-weight: bold;
+    }
+
+    .error-msg {
+      color: #c0392b;
+      font-size: 12px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .input-error {
+      border-color: #c0392b !important;
+      box-shadow: 0 0 0 2px rgba(192,57,43,0.06);
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <form id="formCadastro" novalidate>
+    <label>Tipo de conta:</label>
+    <div class="radio-group">
+      <label><input type="radio" name="tipo" value="fisica" checked> Pessoa Física</label>
+      <label><input type="radio" name="tipo" value="juridica"> Pessoa Jurídica</label>
+    </div>
+
+    <label>CPF/CNPJ:</label>
+    <input type="text" id="cpfCnpj" placeholder="000.000.000-00" required>
+
+    <label>Nome completo:</label>
+    <input type="text" id="nomeCompleto" required>
+
+    <label>Como quer ser chamado(a)?</label>
+    <input type="text" id="apelido" placeholder="Ex: João S." required>
+
+    <label>Data de nascimento:</label>
+    <input type="text" id="nascimento" placeholder="dd/mm/aaaa" required>
+    <div id="nascimento-erro" class="error-msg"></div>
+
+    <label>E-mail:</label>
+    <input type="email" id="email" required>
+    <div id="email-erro" class="error-msg"></div>
+
+    <label>Senha:</label>
+    <input type="password" id="senha" required>
+
+    <ul class="password-rules">
+      <li id="regra1">Mínimo 8 caracteres</li>
+      <li id="regra2">Letra maiúscula</li>
+      <li id="regra3">Letra minúscula</li>
+      <li id="regra4">Número</li>
+      <li id="regra5">Caractere especial (ex: @, #, $)</li>
+    </ul>
+
+    <input type="submit" value="Cadastre-se" 
+    onclick="location.href='login.html'"
+    style="background-color: #0b6426; color: white; width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer;">
+
+    <div class="social-buttons">
+      <button type="button" class="google">Google</button>
+      <button type="button" class="facebook">Facebook</button>
+    </div>
+  </form>
+
+  <div class="footer-link">
+    Já tem uma conta? <a href="login.html">Entrar</a>
+  </div>
+</div>
+
+
+  <script src="script2.js"></script>
+
+</body>
+</html>
