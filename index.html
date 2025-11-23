@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Notification -->
+    <div id="notification" class="notification hidden"></div>
+
+    <!-- Header -->
     <header class="header">
         <div class="header-container">
             <div class="logo">
@@ -15,6 +19,7 @@
                 <span>LocaFácil</span>
             </div>
             
+            <!-- Desktop Menu -->
             <nav class="nav-menu">
                 <ul class="nav-links">
                     <li><a href="#home">Início</a></li>
@@ -23,10 +28,11 @@
                 </ul>
             </nav>
 
+            <!-- Desktop Actions -->
             <div class="header-actions">
                 <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Buscar caçambas...">
-                    <button class="search-btn">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Buscar caçambas...">
+                    <button class="search-btn" id="searchBtn">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -40,12 +46,44 @@
                 </button>
             </div>
 
-            <div class="mobile-menu-toggle">
-                <i class="fas fa-bars"></i>
+            <!-- Mobile Search & Menu -->
+            <div class="mobile-actions">
+                <div class="search-container mobile-search">
+                    <input type="text" id="searchInputMobile" class="search-input" placeholder="Buscar...">
+                    <button class="search-btn" id="searchBtnMobile">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <div class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div class="mobile-menu" id="mobileMenu">
+            <nav class="mobile-nav">
+                <a href="#home" class="mobile-nav-link">Início</a>
+                <a href="#services" class="mobile-nav-link">Serviços</a>
+                <a href="suporte.html" class="mobile-nav-link">Suporte</a>
+            </nav>
+
+            <div class="mobile-buttons">
+                <button class="cta-btn mobile-cta" onclick="location.href='login.html'">
+                    <i class="fas fa-user"></i>
+                    Login
+                </button>
+                <button class="cta-btn mobile-cta" onclick="location.href='afiliados.html'">
+                    <i class="fas fa-user-friends"></i>
+                    Afiliados
+                </button>
             </div>
         </div>
     </header>
+
     <main>
+        <!-- Hero Section -->
         <section id="home" class="hero-section">
             <div class="hero-container">
                 <div class="hero-content">
@@ -168,31 +206,33 @@
         </section>
     </main>
 
-  
-        <div class="footer">
-           
-                <div class="footer-links">
-                    <a href="#">Trabalhe conosco</a>
-                    <a href="#">Termos e condições</a>
-                    <a href="#">Promoções</a>
-                    <a href="#">Como cuidamos da sua privacidade</a>
-                    <a href="#">Acessibilidade</a>
-                    <a href="https://biolink.info/locafacil">Contato</a>
-                    <a href="equipe.html">Conheça nossos progamadores</a>
-                    <a href="#">Programa de Afiliados</a>
-                </div>
-                
-                <div class="footer-whatsapp">
-                    <div class="footer-contact-info">
-                        <i class="fas fa-phone"></i>
-                        <span>(24) 99999-9999</span>
-                    <button class="whatsapp-btn">   
-                        <i class="fab fa-whatsapp"></i>
-                        Falar no WhatsApp
-                    </button>
-                <p>Copyright © 2024-2025 LocaFácil.com Br LTDA.</p>
-                <p>CNPJ nº00.000.000/0001-00 | Volta Redonda, RJ - CEP 00000-000 - empresa do grupo LocaFácil.</p>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#">Trabalhe conosco</a>
+            <a href="#">Termos e condições</a>
+            <a href="#">Promoções</a>
+            <a href="#">Como cuidamos da sua privacidade</a>
+            <a href="#">Acessibilidade</a>
+            <a href="https://biolink.info/locafacil">Contato</a>
+            <a href="equipe.html">Conheça nossos progamadores</a>
+            <a href="#">Programa de Afiliados</a>
+        </div>
+        
+        <div class="footer-whatsapp">
+            <div class="footer-contact-info">
+                <i class="fas fa-phone"></i>
+                <span>(24) 99999-9999</span>
             </div>
+            <button class="whatsapp-btn" id="whatsappBtn">   
+                <i class="fab fa-whatsapp"></i>
+                Falar no WhatsApp
+            </button>
+        </div>
+        
+        <div class="footer-copyright">
+            <p>Copyright © 2024-2025 LocaFácil.com Br LTDA.</p>
+            <p>CNPJ nº00.000.000/0001-00 | Volta Redonda, RJ - CEP 00000-000 - empresa do grupo LocaFácil.</p>
         </div>
     </footer>
 
