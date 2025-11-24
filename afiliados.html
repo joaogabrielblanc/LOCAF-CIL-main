@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Afiliado</title>
+
+<style>
+    /* Fundo suave com tema ambiental */
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(to bottom, #ffffff, #f3fff1);
+        padding: 20px;
+    }
+
+    /* Card do formulário */
+    form {
+        background: #ffffff;
+        padding: 35px;
+        border-radius: 16px;
+        max-width: 420px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+        border-left: 8px solid #3da36b;
+    }
+
+    label {
+        font-weight: 600;
+        color: #2f5f3b;
+    }
+
+    input, select {
+        padding: 11px;
+        border: 2px solid #b9d7c5;
+        border-radius: 6px;
+        width: 100%;
+        font-size: 15px;
+        transition: 0.2s ease-in-out;
+        background: #f9fff9;
+    }
+
+    /* Foco com cor ambiental */
+    input:focus, select:focus {
+        border-color: #3da36b;
+        background: #eefdf1;
+        outline: none;
+        box-shadow: 0 0 4px #3da36b88;
+    }
+
+    /* Mensagem de erro */
+    .error-msg {
+        color: #c62828;
+        font-size: 12px;
+        display: none;
+        margin-top: -5px;
+        margin-bottom: 5px;
+    }
+
+    /* Requisitos da senha */
+    .senha-requisitos {
+        font-size: 13px;
+        margin-left: 5px;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #f2fff4;
+        border-radius: 8px;
+        border: 1px solid #cce8d2;
+    }
+
+    .senha-requisitos p {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin: 3px 0;
+    }
+
+    .senha-requisitos .ok {
+        color: #2d7d46;
+    }
+
+    .senha-requisitos .erro {
+        color: #b72424;
+    }
+
+    .senha-requisitos .erro::before {
+        content: "✖ ";
+        color: #b72424;
+        font-weight: bold;
+    }
+
+    .senha-requisitos .ok::before {
+        content: "✔ ";
+        color: #2d7d46;
+        font-weight: bold;
+    }
+
+    /* Botão ecológico */
+    button {
+        padding: 14px;
+        background: #3da36b;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 17px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #2e8054;
+    }
+</style>
+
+</head>
+<body>
+
+<form id="formAfiliado">
+    <label>Nome Completo:</label>
+    <input type="text" id="nomeAfiliado" required>
+    <div class="error-msg" id="erro-nomeAfiliado"></div>
+
+    <label>Apelido:</label>
+    <input type="text" id="apelidoAfiliado" required>
+    <div class="error-msg" id="erro-apelidoAfiliado"></div>
+
+    <label>CPF:</label>
+    <input type="text" id="cpfAfiliado" placeholder="000.000.000-00" maxlength="14" required>
+    <div class="error-msg" id="erro-cpfAfiliado"></div>
+
+    <label>Email:</label>
+    <input type="email" id="emailAfiliado" required>
+    <div class="error-msg" id="erro-emailAfiliado"></div>
+
+    <label>Senha:</label>
+    <input type="password" id="senhaAfiliado" required>
+    <div class="error-msg" id="erro-senhaAfiliado"></div>
+
+    <div class="senha-requisitos">
+        <p id="req-8" class="erro">Mínimo 8 caracteres</p>
+        <p id="req-maiuscula" class="erro">Letra maiúscula</p>
+        <p id="req-minuscula" class="erro">Letra minúscula</p>
+        <p id="req-numero" class="erro">Número</p>
+        <p id="req-especial" class="erro">Caractere especial (ex: @, #, $)</p>
+    </div>
+
+    <label>Confirmar Senha:</label>
+    <input type="password" id="confirmSenhaAfiliado" required>
+    <div class="error-msg" id="erro-confirmSenhaAfiliado"></div>
+
+    <label>CEP:</label>
+    <input type="text" id="cepAfiliado" placeholder="00000-000" maxlength="9" required>
+    <div class="error-msg" id="erro-cepAfiliado"></div>
+
+    <label>Logradouro:</label>
+    <input type="text" id="logradouroAfiliado" required>
+
+    <label>Bairro:</label>
+    <input type="text" id="bairroAfiliado" required>
+
+    <label>Cidade:</label>
+    <input type="text" id="cidadeAfiliado" required>
+
+    <label>UF:</label>
+    <select id="ufAfiliado" required>
+        <option value="">Selecione</option>
+        <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+        <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+        <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+        <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+        <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+        <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+        <option>SP</option><option>SE</option><option>TO</option>
+    </select>
+
+    <button type="submit">Cadastrar</button>
+</form>
+
+<script src="afiliados.js"></script>
+</body>
+</html>

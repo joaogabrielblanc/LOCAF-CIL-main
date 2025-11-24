@@ -55,7 +55,7 @@
       border-top: 1px solid #ccc;
     }
 
-    .google { background-color: #db4437; color: white; margin-top: 10px }  
+    .google { background-color: #db4437; color: white; margin-top: 10px }
     .facebook { background-color: #3b5998; color: white; margin-top: 10px }
 
     .footer {
@@ -83,22 +83,23 @@
       font-size: 14px;
       color: #0b6426;
     }
- 
   </style>
 </head>
+
 <body>
+
 <div class="login-container">
   <h2>Acesse a sua conta</h2>
-  <form id="loginForm" action="processa_dados.php" method="post">
+
+  <form id="loginForm" method="post">
     <input type="email" name="email" id="email" placeholder="E-mail" required>
 
     <div class="password-container">
-  <input type="password" name="senha" id="senha" placeholder="Senha" required>
+      <input type="password" name="senha" id="senha" placeholder="Senha" required>
+    </div>
 
     <button type="submit">Continuar</button>
   </form>
-
-  
 
   <div class="divider"></div>
 
@@ -113,3 +114,9 @@
     <p><a href="index.html">Voltar para pagina inicial</a></p>
   </div>
 </div>
+
+
+<script src="login.js"></script>
+
+</body>
+</html>
