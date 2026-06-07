@@ -1,0 +1,18 @@
+# Dependências
+node_modules/
+server/node_modules/
+
+# Variáveis de ambiente
+.env
+server/.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
