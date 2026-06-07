@@ -2,7 +2,7 @@
 
 /* ── Impacto números ── */
 .impacto-card {
-  background: linear-gradient(135deg, #000, #4a7c59);
+  background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%);
   border-radius: 16px;
   padding: 36px 24px;
   text-align: center;

@@ -7,7 +7,7 @@
   --gm:    #4a7c59;
   --gl:    #f0f9f3;
   --gml:   #d4edda;
-  --preto: #0a0a0a;
+  --preto: #2d5a3d;
   --texto: #1a1a2e;
   --cinza: #666;
   --bg:    #f2f4f2;
@@ -21,7 +21,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; color:var(--texto); }
 
 /* ── LOGIN ── */
 .login-body {
-  background: linear-gradient(135deg, #0a1a0e 0%, #000 40%, #1a3a22 100%);
+  background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 40%, #7fb069 100%);
   min-height:100vh;
   display:flex; align-items:center; justify-content:center;
   padding:20px;
