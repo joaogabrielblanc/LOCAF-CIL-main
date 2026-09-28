@@ -113,6 +113,23 @@ async function login() {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
   btn.disabled = true;
 
+  // 1. Tentar login via API Backend REST
+  if (window.ApiService) {
+    try {
+      const apiRes = await ApiService.loginAfiliado(email, senha);
+      if (apiRes && apiRes.sucesso && apiRes.token) {
+        localStorage.setItem('lf_token', apiRes.token);
+        const u = apiRes.usuario;
+        DB._criarSessao('afiliado', u.id, u.nome, u.email);
+        location.href = 'dashboard.html';
+        return;
+      }
+    } catch (errApi) {
+      console.warn('Erro API login afiliado:', errApi);
+    }
+  }
+
+  // 2. Fallback localStorage
   await DBReady;
   const r = await DB.loginAfiliado(email, senha);
   btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Acessar o portal';
@@ -144,6 +161,23 @@ async function cadastrar() {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cadastrando...';
   btn.disabled = true;
 
+  // 1. Tentar cadastro na API Backend
+  if (window.ApiService) {
+    try {
+      const apiCad = await ApiService.cadastroAfiliado({ empresa, cnpj, email, senha, telefone: tel, cidade, estado });
+      if (apiCad && apiCad.sucesso && apiCad.token) {
+        localStorage.setItem('lf_token', apiCad.token);
+        await DBReady;
+        await DB.cadastrarAfiliado({ empresa, cnpj, email, senha, telefone: tel, cidade, estado });
+        location.href = 'dashboard.html';
+        return;
+      }
+    } catch (errApi) {
+      console.warn('Erro API cadastro afiliado:', errApi);
+    }
+  }
+
+  // 2. Fallback localStorage
   await DBReady;
   const r = await DB.cadastrarAfiliado({ empresa, cnpj, email, senha, telefone: tel, cidade, estado });
   btn.innerHTML = '<i class="fas fa-building"></i> Cadastrar minha empresa';

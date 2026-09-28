@@ -1,0 +1,20 @@
+{
+  "all": true,
+  "include": [
+    "controllers/**/*.js",
+    "middleware/**/*.js",
+    "models/**/*.js",
+    "routes/**/*.js",
+    "index.js"
+  ],
+  "exclude": [
+    "tests/**",
+    "node_modules/**",
+    "coverage/**"
+  ],
+  "reporter": [
+    "text",
+    "text-summary",
+    "lcov"
+  ]
+}

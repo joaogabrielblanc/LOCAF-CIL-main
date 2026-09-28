@@ -61,9 +61,35 @@ async function buscarCep() {
     status.className = 'cep-status success';
     status.innerHTML = `<i class="fas fa-map-marker-alt"></i> <strong>${cidadeApi} — ${estadoApi}</strong>${viacep.bairro ? ' · ' + viacep.bairro : ''}`;
 
-    // 2. Buscar caçambas no banco local (localStorage)
-    await DBReady;
-    const cacambas = DB.buscarCacambasPorLocalidade(cidadeApi, estadoApi, parseInt(cep, 10));
+    // 2. Buscar caçambas via API PostgreSQL com fallback para localStorage
+    let cacambas = [];
+    if (window.ApiService) {
+      try {
+        const resApi = await ApiService.getCacambas();
+        if (resApi && resApi.sucesso && Array.isArray(resApi.dados)) {
+          const cidNorm = (cidadeApi || '').toLowerCase().trim();
+          const filtradas = resApi.dados.filter(c => 
+            !cidNorm || (c.cidade_afiliado && c.cidade_afiliado.toLowerCase().includes(cidNorm))
+          );
+          cacambas = (filtradas.length > 0 ? filtradas : resApi.dados.slice(0, 4)).map(c => ({
+            id: c.id_cacamba,
+            nome: c.nome,
+            tipo: c.tipo || 'obra',
+            capacidade: c.capacidade,
+            dimensoes: c.dimensoes,
+            preco: parseFloat(c.preco || 0),
+            empresa: c.empresa_afiliado || 'Empresa Afiliada'
+          }));
+        }
+      } catch (errApi) {
+        console.warn('Erro ao consultar caçambas na API:', errApi);
+      }
+    }
+
+    if (!cacambas.length) {
+      await DBReady;
+      cacambas = DB.buscarCacambasPorLocalidade(cidadeApi, estadoApi, parseInt(cep, 10));
+    }
 
     // 3. Renderizar resultados
     const titulo = document.getElementById('resTitulo');
@@ -108,16 +134,29 @@ async function buscarCep() {
 
 // ── Header dinâmico (mostra nome do usuário logado) ───
 (function () {
-  const getSession = () => {
-    const s = localStorage.getItem('lf_session');
-    return s ? JSON.parse(s) : null;
-  };
-  const s = getSession();
-  if (s && s.tipo === 'cliente') {
-    const btn = document.getElementById('btnHeaderLogin');
-    if (btn) {
-      btn.href = 'pages/cliente/dashboard.html';
-      document.getElementById('headerLoginTxt').textContent = s.nome.split(' ')[0];
+  try {
+    let s = null;
+    if (typeof DB !== 'undefined' && DB.getSession) {
+      s = DB.getSession();
+    } else {
+      const raw = localStorage.getItem('lf_session');
+      if (raw) {
+        try {
+          s = JSON.parse(raw);
+        } catch {
+          s = JSON.parse(decodeURIComponent(escape(atob(raw))));
+        }
+      }
     }
+    if (s && s.tipo === 'cliente' && s.nome) {
+      const btn = document.getElementById('btnHeaderLogin');
+      if (btn) {
+        btn.href = 'pages/cliente/dashboard.html';
+        const elTxt = document.getElementById('headerLoginTxt');
+        if (elTxt) elTxt.textContent = s.nome.split(' ')[0];
+      }
+    }
+  } catch (err) {
+    console.warn('Erro ao ler sessão do header:', err);
   }
 })();

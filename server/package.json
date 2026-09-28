@@ -6,9 +6,19 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "node tests/api.test.js"
+    "test": "poku",
+    "test:unit": "poku tests/unit",
+    "test:integration": "poku tests/integration",
+    "test:coverage": "poku --coverage"
   },
-  "keywords": ["nodejs", "express", "jwt", "bcrypt", "rest-api", "cacambas"],
+  "keywords": [
+    "nodejs",
+    "express",
+    "jwt",
+    "bcrypt",
+    "rest-api",
+    "cacambas"
+  ],
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -16,6 +26,11 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-validator": "^7.3.2",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "@pokujs/coverage": "^0.10.0",
+    "poku": "^4.5.0"
   }
 }

@@ -110,6 +110,23 @@ async function fazerLogin() {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
   btn.disabled = true;
 
+  // 1. Tentar login via API Backend REST
+  if (window.ApiService) {
+    try {
+      const apiRes = await ApiService.loginCliente(email, senha);
+      if (apiRes && apiRes.sucesso && apiRes.token) {
+        localStorage.setItem('lf_token', apiRes.token);
+        const u = apiRes.usuario;
+        DB._criarSessao('cliente', u.id, u.nome, u.email);
+        location.href = 'dashboard.html';
+        return;
+      }
+    } catch (errApi) {
+      console.warn('Erro API login cliente:', errApi);
+    }
+  }
+
+  // 2. Fallback localStorage
   await DBReady;
   const r = await DB.loginCliente(email, senha);
   btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar na minha conta';
@@ -139,6 +156,23 @@ async function cadastrar() {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando conta...';
   btn.disabled = true;
 
+  // 1. Tentar cadastro na API Backend
+  if (window.ApiService) {
+    try {
+      const apiCad = await ApiService.cadastroCliente({ nome, email, senha, telefone: tel, cep });
+      if (apiCad && apiCad.sucesso && apiCad.token) {
+        localStorage.setItem('lf_token', apiCad.token);
+        await DBReady;
+        await DB.cadastrarCliente({ nome, email, senha, telefone: tel, cep });
+        location.href = 'dashboard.html';
+        return;
+      }
+    } catch (errApi) {
+      console.warn('Erro API cadastro cliente:', errApi);
+    }
+  }
+
+  // 2. Fallback localStorage
   await DBReady;
   const r = await DB.cadastrarCliente({ nome, email, senha, telefone: tel, cep });
   btn.innerHTML = '<i class="fas fa-user-plus"></i> Criar minha conta';

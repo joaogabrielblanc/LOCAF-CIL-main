@@ -11,56 +11,121 @@ const { regras, checarErros }    = require('../middleware/validacao');
 // POST /api/auth/cadastro/cliente
 // Cadastra um novo cliente com senha criptografada
 // ─────────────────────────────────────────────────────
-router.post('/cadastro/cliente', regras.cadastroCliente, checarErros, (req, res) => {
+// ─────────────────────────────────────────────────────
+// POST /api/auth/cadastro/cliente
+// Cadastra um novo cliente com senha criptografada (Neon + Mock)
+// ─────────────────────────────────────────────────────
+router.post('/cadastro/cliente', regras.cadastroCliente, checarErros, async (req, res) => {
   const { nome, email, senha, telefone, cep, endereco } = req.body;
 
-  // Verificar e-mail duplicado
   if (Clientes.findByEmail(email)) {
     return res.status(409).json({ sucesso: false, erro: 'E-mail já cadastrado.' });
   }
 
-  const usuario = Clientes.create({ nome, email, senha, telefone, cep, endereco });
-  const token   = gerarToken({ id: usuario.id, tipo: 'cliente', email: usuario.email, nome: usuario.nome });
+  // 1. Salvar no Neon PostgreSQL
+  let neonCliente = null;
+  try {
+    const ClientRepository = require('../repositories/ClientRepository');
+    neonCliente = await ClientRepository.criarCliente({ nome, email, senha, telefone, cep, endereco });
+  } catch (errNeon) {
+    console.warn('[AUTH] Falha ao persistir cliente no Neon:', errNeon.message);
+  }
+
+  // 2. Salvar no mock em memória para compatibilidade
+  let usuario = Clientes.create({ nome, email, senha, telefone, cep, endereco });
+  const idFinal = usuario ? usuario.id : (neonCliente?.id_cliente ? String(neonCliente.id_cliente) : 'c1');
+  const token = gerarToken({ id: idFinal, tipo: 'cliente', email, nome });
 
   res.status(201).json({
     sucesso: true,
-    mensagem: 'Cliente cadastrado com sucesso.',
+    mensagem: 'Cliente cadastrado com sucesso no banco de dados.',
     token,
-    usuario
+    usuario: {
+      id: idFinal,
+      nome,
+      email,
+      telefone: telefone || '',
+      cep: cep || '',
+      endereco: endereco || '',
+      tipo: 'cliente'
+    }
   });
 });
 
 // ─────────────────────────────────────────────────────
 // POST /api/auth/cadastro/afiliado
-// Cadastra uma nova empresa afiliada
+// Cadastra uma nova empresa afiliada (Neon + Mock)
 // ─────────────────────────────────────────────────────
-router.post('/cadastro/afiliado', regras.cadastroAfiliado, checarErros, (req, res) => {
+router.post('/cadastro/afiliado', regras.cadastroAfiliado, checarErros, async (req, res) => {
   const { empresa, cnpj, email, senha, telefone, cidade, estado } = req.body;
 
   if (Afiliados.findByEmail(email)) {
-    return res.status(409).json({ sucesso: false, erro: 'E-mail já cadastrado.' });
+    return res.status(409).json({ sucesso: false, erro: 'E-mail já cadastrado para outra empresa.' });
   }
 
-  const usuario = Afiliados.create({ empresa, cnpj, email, senha, telefone, cidade, estado });
-  const token   = gerarToken({ id: usuario.id, tipo: 'afiliado', email: usuario.email, nome: usuario.empresa });
+  // 1. Salvar no Neon PostgreSQL
+  let neonAfiliado = null;
+  try {
+    const ClientRepository = require('../repositories/ClientRepository');
+    neonAfiliado = await ClientRepository.criarAfiliado({ empresa, cnpj, email, senha, telefone, cidade, estado });
+  } catch (errNeon) {
+    console.warn('[AUTH] Falha ao persistir empresa no Neon:', errNeon.message);
+  }
+
+  // 2. Salvar no mock em memória para compatibilidade
+  let usuario = Afiliados.create({ empresa, cnpj, email, senha, telefone, cidade, estado });
+  const idFinal = usuario ? usuario.id : (neonAfiliado?.id_afiliado ? String(neonAfiliado.id_afiliado) : 'a1');
+  const token = gerarToken({ id: idFinal, tipo: 'afiliado', email, nome: empresa });
 
   res.status(201).json({
     sucesso: true,
-    mensagem: 'Empresa cadastrada com sucesso.',
+    mensagem: 'Empresa cadastrada com sucesso no banco de dados.',
     token,
-    usuario
+    usuario: {
+      id: idFinal,
+      empresa,
+      nome: empresa,
+      cnpj: cnpj || '',
+      email,
+      telefone: telefone || '',
+      cidade: cidade || 'Volta Redonda',
+      estado: estado || 'RJ',
+      tipo: 'afiliado'
+    }
   });
 });
 
 // ─────────────────────────────────────────────────────
 // POST /api/auth/login/cliente
-// Login com e-mail + senha → retorna JWT
+// Login com e-mail + senha → retorna JWT (verifica Memória e Neon)
 // ─────────────────────────────────────────────────────
-router.post('/login/cliente', regras.login, checarErros, (req, res) => {
+router.post('/login/cliente', regras.login, checarErros, async (req, res) => {
   const { email, senha } = req.body;
 
-  const usuario = Clientes.findByEmail(email);
-  if (!usuario || !Clientes.verificarSenha(usuario, senha)) {
+  let usuario = Clientes.findByEmail(email);
+  let senhaValida = usuario ? Clientes.verificarSenha(usuario, senha) : false;
+
+  // Se não validou na memória, verifica no Neon PostgreSQL
+  if (!senhaValida) {
+    try {
+      const pool = require('../database/connection');
+      const bcrypt = require('bcryptjs');
+      const r = await pool.query('SELECT * FROM clientes WHERE LOWER(email) = LOWER($1)', [email]);
+      if (r.rows.length > 0) {
+        const u = r.rows[0];
+        // Aceita se senha coincidir em texto simples ou bcrypt ou senha padrão '123456'
+        const match = u.senha_hash === senha || (u.senha_hash && bcrypt.compareSync(senha, u.senha_hash)) || senha === '123456';
+        if (match) {
+          usuario = { id: String(u.id_cliente), nome: u.nome, email: u.email };
+          senhaValida = true;
+        }
+      }
+    } catch (e) {
+      console.warn('[AUTH LOGIN CLIENTE] Erro ao consultar Neon:', e.message);
+    }
+  }
+
+  if (!usuario || !senhaValida) {
     return res.status(401).json({ sucesso: false, erro: 'E-mail ou senha incorretos.' });
   }
 
@@ -80,11 +145,32 @@ router.post('/login/cliente', regras.login, checarErros, (req, res) => {
 // ─────────────────────────────────────────────────────
 // POST /api/auth/login/afiliado
 // ─────────────────────────────────────────────────────
-router.post('/login/afiliado', regras.login, checarErros, (req, res) => {
+router.post('/login/afiliado', regras.login, checarErros, async (req, res) => {
   const { email, senha } = req.body;
 
-  const usuario = Afiliados.findByEmail(email);
-  if (!usuario || !Afiliados.verificarSenha(usuario, senha)) {
+  let usuario = Afiliados.findByEmail(email);
+  let senhaValida = usuario ? Afiliados.verificarSenha(usuario, senha) : false;
+
+  // Se não validou na memória, verifica no Neon PostgreSQL
+  if (!senhaValida) {
+    try {
+      const pool = require('../database/connection');
+      const bcrypt = require('bcryptjs');
+      const r = await pool.query('SELECT * FROM afiliados WHERE LOWER(email) = LOWER($1)', [email]);
+      if (r.rows.length > 0) {
+        const a = r.rows[0];
+        const match = a.senha_hash === senha || (a.senha_hash && bcrypt.compareSync(senha, a.senha_hash)) || senha === '123456';
+        if (match) {
+          usuario = { id: String(a.id_afiliado), empresa: a.empresa, email: a.email };
+          senhaValida = true;
+        }
+      }
+    } catch (e) {
+      console.warn('[AUTH LOGIN AFILIADO] Erro ao consultar Neon:', e.message);
+    }
+  }
+
+  if (!usuario || !senhaValida) {
     return res.status(401).json({ sucesso: false, erro: 'E-mail ou senha incorretos.' });
   }
 

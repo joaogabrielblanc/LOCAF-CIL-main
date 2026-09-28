@@ -26,6 +26,10 @@
   </nav>
   <div class="s-footer">
     <div class="s-user" id="sUser">—</div>
+    <div class="api-status-pill" id="apiStatusPill">
+      <span class="dot"></span>
+      <span id="apiStatusText">Checando API...</span>
+    </div>
     <button class="btn-sair" onclick="AdminAPI.logout()"><i class="fas fa-sign-out-alt"></i><span>Sair</span></button>
   </div>
 </aside>
@@ -92,8 +96,8 @@
       <h1>Todos os Pedidos <span class="count-badge" id="countPedidos"></span></h1>
       <p>Visão global de todos os pedidos da plataforma.</p>
     </div>
-    <div class="toolbar">
-      <input type="text" class="search-input" id="searchPedidos" placeholder="Buscar por cliente ou empresa..." oninput="filtrarPedidos()">
+    <div class="toolbar" style="display:flex;gap:10px;align-items:center;">
+      <input type="text" class="search-input" id="searchPedidos" placeholder="Buscar por cliente ou empresa..." oninput="filtrarPedidos()" style="flex:1;">
       <select class="sel-filtro" id="filtroStatusPedido" onchange="filtrarPedidos()">
         <option value="">Todos os status</option>
         <option value="pendente">Pendente</option>
@@ -104,9 +108,34 @@
     </div>
     <div class="panel">
       <table>
-        <thead><tr><th>#</th><th>Cliente</th><th>Empresa</th><th>Caçamba</th><th>Data</th><th>Valor</th><th>Status</th></tr></thead>
+        <thead><tr><th style="cursor:pointer;" onclick="alternarOrdemPedidos()" title="Clique para alternar ordem da numeração (crescente/decrescente)"># <i class="fas fa-sort-numeric-down" id="icOrdemPedidos" style="font-size:11px;opacity:0.7;"></i></th><th>Cliente</th><th>Empresa</th><th>Caçamba</th><th>Data</th><th>Valor</th><th>Status</th></tr></thead>
         <tbody id="tbPedidos"></tbody>
       </table>
+      
+      <!-- Controles de Paginação (Consumo da API com 4 tabelas) -->
+      <div class="paginacao-bar">
+        <div class="pag-info">
+          Página <strong id="lblPagAtual">1</strong> de <strong id="lblPagTotal">1</strong>
+          · <span id="lblTotalRegistros">0</span> pedidos encontrados
+        </div>
+        <div class="pag-botoes">
+          <button class="btn-pag" id="btnPagAnt" onclick="trocarPagina(-1)" disabled>
+            <i class="fas fa-chevron-left"></i> Anterior
+          </button>
+          <div id="pagNumeros" class="pag-numeros"></div>
+          <button class="btn-pag" id="btnPagProx" onclick="trocarPagina(1)" disabled>
+            Próxima <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        <div class="pag-limite">
+          <label for="selLimite">Itens por pág:</label>
+          <select id="selLimite" onchange="alterarLimite(this.value)">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -114,7 +143,7 @@
   <section class="page" id="page-banco">
     <div class="page-hd">
       <h1>Banco de Dados</h1>
-      <p>Visualize e exporte os dados armazenados no <code>localStorage</code> do navegador.</p>
+      <p>Visualize e exporte os registros do banco de dados (Neon PostgreSQL / LocalStorage).</p>
     </div>
     <div class="db-tabs">
       <button class="db-tab active" onclick="setDbTab('clientes',this)">Clientes</button>
@@ -164,9 +193,12 @@
   </div>
 </div>
 
+
+
 <div class="toast" id="toast"></div>
 
 <script src="../../lib/db.js"></script>
+<script src="../../assets/js/api.js"></script>
 <script src="admin-api.js"></script>
 <script src="admin-dashboard.js"></script>
 </body>

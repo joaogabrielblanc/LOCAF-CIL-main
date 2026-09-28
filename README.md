@@ -80,6 +80,7 @@ Os dados são salvos no localStorage do próprio navegador.
 
 ### Backend (opcional, para a apresentação DBEI)
 ```bash
+cd server
 npm install
 cp .env.example .env
 npm start        # http://localhost:3001

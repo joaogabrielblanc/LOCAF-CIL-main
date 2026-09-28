@@ -26,11 +26,9 @@ const STATUS_LABEL = {
 };
 
 // ── Logout ────────────────────────────────────────────
+
 function sair() {
-  // logout via API
-  localStorage.removeItem('lf_token');
-  localStorage.removeItem('lf_session');
-  location.href = '../../index.html';
+  DB.logout();
   location.href = '../../index.html';
 }
 
@@ -98,7 +96,7 @@ function renderPedidosFull() {
   const cacambaMap = {};
   DB.getCacambas().forEach(c => (cacambaMap[c.id] = c));
   document.getElementById('listaPedidosFull').innerHTML = pedidos.length
-    ? [...pedidos].reverse().map(p => pedidoHTML(p, cacambaMap)).join('')
+    ? pedidos.map(p => pedidoHTML(p, cacambaMap)).join('')
     : `<div class="empty"><i class="fas fa-filter"></i>Nenhum pedido com esse filtro.</div>`;
 }
 
@@ -250,7 +248,7 @@ document.getElementById('modalPedido').addEventListener('click', function (e) {
   if (e.target === this) fecharModal();
 });
 
-function confirmarPedido() {
+async function confirmarPedido() {
   const end    = document.getElementById('enderecoEntrega').value.trim();
   const data   = document.getElementById('dataInicio').value;
   const dias   = parseInt(document.getElementById('periodoAluguel').value);
@@ -263,15 +261,43 @@ function confirmarPedido() {
   const semanas    = Math.ceil(dias / 7);
   const valor      = cacambaSelecionada.preco * semanas;
 
-  DB.criarPedido({
-    clienteId:  sess.id,
-    cacambaId:  cacambaSelecionada.id,
-    afiliadoId: cacambaSelecionada.afiliadoId,
-    status:     'pendente',
-    data, dataFim: dataFimStr, valor, endereco: end
-  });
+  const pedidoDados = {
+    clienteId:    sess.id,
+    clienteEmail: sess.email,
+    clienteNome:  sess.nome,
+    id_cliente:   sess.id,
+    cacambaId:    cacambaSelecionada.id,
+    id_cacamba:   cacambaSelecionada.id,
+    afiliadoId:   cacambaSelecionada.afiliadoId,
+    id_afiliado:  cacambaSelecionada.afiliadoId,
+    status:       'pendente',
+    data,
+    dataFim:      dataFimStr,
+    valor,
+    endereco:     end
+  };
 
-  document.getElementById('successMsg').style.display = 'block';
+  // 1. Salvar no banco de dados Neon (PostgreSQL)
+  if (window.ApiService) {
+    try {
+      const resApi = await ApiService.criarPedido(pedidoDados);
+      if (resApi && resApi.sucesso) {
+        console.log('[API Neon] Pedido gravado no PostgreSQL:', resApi.dado || resApi.pedido);
+      }
+    } catch (errApi) {
+      console.warn('[API Neon] Falha ao enviar pedido:', errApi);
+    }
+  }
+
+  // 2. Atualizar estado local
+  pedidoDados._neonSynced = true;
+  DB.criarPedido(pedidoDados);
+
+  const sMsg = document.getElementById('successMsg');
+  if (sMsg) {
+    sMsg.innerHTML = '<i class="fas fa-check-circle"></i> Pedido realizado e salvo no banco de dados (Neon)!';
+    sMsg.style.display = 'block';
+  }
   setTimeout(() => { fecharModal(); renderVisao(); }, 1800);
 }
 

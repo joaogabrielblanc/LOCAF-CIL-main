@@ -38,10 +38,10 @@ function toast(msg, dur = 2400) {
 }
 
 // ── Logout ─────────────────────────────────────────────
-function sair() { // logout via API
-  localStorage.removeItem('lf_token');
-  localStorage.removeItem('lf_session');
-  location.href = '../../index.html'; location.href = '../../index.html'; }
+function sair() {
+  DB.logout();
+  location.href = '../../index.html';
+}  
 
 // ── Navegação ──────────────────────────────────────────
 function showPage(id, btn) {
@@ -96,14 +96,16 @@ function renderPedidos() {
   DB.getCacambas().forEach(c => (cMap[c.id] = c));
 
   document.getElementById('tbodyPedidos').innerHTML = pedidos.length
-    ? [...pedidos].reverse().map(p => {
+    ? pedidos.map((p, idx) => {
         const c = cMap[p.cacambaId] || {};
+        const numId = p.id_pedido || (p.id && !isNaN(p.id) ? p.id : (idx + 1));
+        const numExibicao = String(numId).padStart(3, '0');
         // Select de status com classes dinâmicas
         const opts = [...STATUS_FLOW, 'concluido'].map(s =>
           `<option value="${s}" ${p.status === s ? 'selected' : ''}>${STATUS_LABEL[s]}</option>`
         ).join('');
         return `<tr>
-          <td><b>#${p.id.slice(-4).toUpperCase()}</b></td>
+          <td><b style="font-family:monospace;font-size:12px;">#${numExibicao}</b></td>
           <td><i class="fas ${ICONS[c.tipo]||'fa-dumpster'}" style="color:#2d5a3d;margin-right:5px;"></i>${c.nome || '-'}</td>
           <td>${p.data}${p.dataFim ? ' → ' + p.dataFim : ''}</td>
           <td style="font-size:12px;color:#555;">${p.endereco || '-'}</td>
@@ -270,27 +272,48 @@ document.getElementById('modalCacamba').addEventListener('click', e => {
   if (e.target === document.getElementById('modalCacamba')) fecharModal();
 });
 
-function salvarCacamba() {
+async function salvarCacamba() {
   const id    = document.getElementById('editId').value;
   const nome  = document.getElementById('fNome').value.trim();
   const preco = parseFloat(document.getElementById('fPreco').value);
   if (!nome)          { alert('Informe o nome da caçamba.'); return; }
   if (!preco || preco <= 0) { alert('Informe um preço válido.'); return; }
 
-  DB.salvarCacamba({
-    id: id || undefined, afiliadoId: sess.id,
-    nome, tipo: document.getElementById('fTipo').value,
+  const dados = {
+    id: id || undefined,
+    afiliadoId: sess.id,
+    id_afiliado: sess.id,
+    afiliadoEmail: sess.email,
+    nome,
+    tipo: document.getElementById('fTipo').value,
     capacidade: document.getElementById('fCap').value,
     dimensoes:  document.getElementById('fDim').value,
     peso_max:   document.getElementById('fPeso').value,
-    preco, descricao: document.getElementById('fDesc').value,
+    preco,
+    descricao: document.getElementById('fDesc').value,
     imagem: document.getElementById('fImg').value || null,
     disponivel: document.getElementById('fDisp').checked
-  });
+  };
+
+  // 1. Salvar no banco de dados Neon (PostgreSQL)
+  if (window.ApiService) {
+    try {
+      const resApi = await ApiService.criarCacamba(dados);
+      if (resApi && resApi.sucesso) {
+        console.log('[API Neon] Caçamba inserida no PostgreSQL:', resApi.dado || resApi.cacamba);
+      }
+    } catch (errApi) {
+      console.warn('[API Neon] Falha ao enviar caçamba:', errApi);
+    }
+  }
+
+  // 2. Atualizar estado local
+  dados._neonSynced = true;
+  DB.salvarCacamba(dados);
 
   fecharModal();
   renderCacambas();
-  toast('✅ Caçamba salva!');
+  toast('✅ Caçamba salva no banco de dados (Neon)!');
 }
 
 function toggleDisp(id) {
