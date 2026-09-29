@@ -177,7 +177,7 @@ const ApiService = {
 
   // ── INSERÇÃO NO BANCO DE DADOS NEON (POSTGRESQL) ─────────
   async criarCacamba(dados) {
-    const res = await this.request('/cacambas', {
+    const res = await this.request('/cacambas/cadastro', {
       method: 'POST',
       body: JSON.stringify(dados)
     });
@@ -185,7 +185,7 @@ const ApiService = {
   },
 
   async criarPedido(dados) {
-    const res = await this.request('/pedidos', {
+    const res = await this.request('/pedidos/cadastro', {
       method: 'POST',
       body: JSON.stringify(dados)
     });
@@ -193,7 +193,7 @@ const ApiService = {
   },
 
   async criarAfiliado(dados) {
-    const res = await this.request('/afiliados', {
+    const res = await this.request('/afiliados/cadastro', {
       method: 'POST',
       body: JSON.stringify(dados)
     });
@@ -201,7 +201,7 @@ const ApiService = {
   },
 
   async criarCliente(dados) {
-    const res = await this.request('/clientes', {
+    const res = await this.request('/clientes/cadastro', {
       method: 'POST',
       body: JSON.stringify(dados)
     });

@@ -222,11 +222,12 @@ class ClientController {
             }
 
             const nova = await ClientRepository.criarCacamba(req.body);
+            const cacambaFormatada = nova ? { ...nova, id: nova.id_cacamba || nova.id } : null;
             res.status(201).json({
                 sucesso: true,
                 mensagem: 'Caçamba cadastrada com sucesso no banco de dados Neon!',
-                dado: nova,
-                cacamba: nova
+                dado: cacambaFormatada,
+                cacamba: cacambaFormatada
             });
         } catch (error) {
             console.error('[ERRO CRIAR CACAMBA]', error);
@@ -240,11 +241,12 @@ class ClientController {
     static async criarPedido(req, res) {
         try {
             const novo = await ClientRepository.criarPedido(req.body);
+            const pedidoFormatado = novo ? { ...novo, id: novo.id_pedido || novo.id } : null;
             res.status(201).json({
                 sucesso: true,
                 mensagem: 'Pedido criado com sucesso no banco de dados Neon!',
-                dado: novo,
-                pedido: novo
+                dado: pedidoFormatado,
+                pedido: pedidoFormatado
             });
         } catch (error) {
             console.error('[ERRO CRIAR PEDIDO]', error);
@@ -266,11 +268,12 @@ class ClientController {
             }
 
             const novo = await ClientRepository.criarAfiliado(req.body);
+            const afiliadoFormatado = novo ? { ...novo, id: novo.id_afiliado || novo.id } : null;
             res.status(201).json({
                 sucesso: true,
                 mensagem: 'Empresa cadastrada com sucesso no banco de dados Neon!',
-                dado: novo,
-                afiliado: novo
+                dado: afiliadoFormatado,
+                afiliado: afiliadoFormatado
             });
         } catch (error) {
             console.error('[ERRO CRIAR AFILIADO]', error);
@@ -292,11 +295,12 @@ class ClientController {
             }
 
             const novo = await ClientRepository.criarCliente(req.body);
+            const clienteFormatado = novo ? { ...novo, id: novo.id_cliente || novo.id } : null;
             res.status(201).json({
                 sucesso: true,
                 mensagem: 'Cliente cadastrado com sucesso no banco de dados Neon!',
-                dado: novo,
-                cliente: novo
+                dado: clienteFormatado,
+                cliente: clienteFormatado
             });
         } catch (error) {
             console.error('[ERRO CRIAR CLIENTE]', error);

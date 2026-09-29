@@ -6,7 +6,6 @@ class ClientRepository {
         const offset = (page - 1) * limit;
         const params = [limit, offset];
         let statusFilter = '';
-
         if (status && status !== 'todos') {
             params.push(status);
             statusFilter = 'WHERE p.status = $3';

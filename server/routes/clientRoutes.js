@@ -16,7 +16,6 @@ router.get('/clientes/consulta/:id', ClientController.buscarClientePorId);
 router.get('/consulta-clientes/:id', ClientController.buscarClientePorId);
 
 // 3. Caçambas (Geral e por ID)
-router.get('/cacambas', ClientController.buscarCacambas);
 router.get('/cacambas/consulta', ClientController.buscarCacambas);
 router.get('/consulta-cacambas', ClientController.buscarCacambas);
 router.get('/cacambas/consulta/:id', ClientController.buscarCacambaPorId);
@@ -34,15 +33,10 @@ router.get('/estatisticas/consulta', ClientController.buscarEstatisticas);
 router.get('/consulta-estatisticas', ClientController.buscarEstatisticas);
 
 // 6. Cadastro de Caçambas, Pedidos, Afiliados e Clientes no Banco Neon PostgreSQL
-router.post('/cacambas', ClientController.criarCacamba);
 router.post('/cacambas/cadastro', ClientController.criarCacamba);
-router.post('/pedidos', ClientController.criarPedido);
 router.post('/pedidos/cadastro', ClientController.criarPedido);
-router.post('/afiliados', ClientController.criarAfiliado);
 router.post('/afiliados/cadastro', ClientController.criarAfiliado);
-router.post('/empresas', ClientController.criarAfiliado);
 router.post('/empresas/cadastro', ClientController.criarAfiliado);
-router.post('/clientes', ClientController.criarCliente);
 router.post('/clientes/cadastro', ClientController.criarCliente);
 
 module.exports = router;
