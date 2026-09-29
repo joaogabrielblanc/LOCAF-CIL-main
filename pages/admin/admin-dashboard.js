@@ -8,6 +8,7 @@ document.getElementById('sUser').textContent = sess.nome + ' · admin';
 // ── Dados e Estado de Paginação ───────────────────────
 let _clientes  = [];
 let _afiliados = [];
+let _cacambas  = [];
 let _pedidos   = [];
 let _pagePedidos = 1;
 let _limitPedidos = 10;
@@ -54,11 +55,13 @@ function nav(btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   const id = btn.dataset.page;
-  document.getElementById('page-' + id).classList.add('active');
+  const targetPage = document.getElementById('page-' + id);
+  if (targetPage) targetPage.classList.add('active');
   btn.classList.add('active');
   if (id === 'overview')  carregarOverview();
   if (id === 'clientes')  carregarClientes();
   if (id === 'afiliados') carregarAfiliados();
+  if (id === 'cacambas')  carregarCacambas();
   if (id === 'pedidos')   carregarPedidos();
   if (id === 'banco')     carregarDb('clientes');
 }
@@ -84,10 +87,10 @@ async function carregarOverview() {
   if (sr && sr.sucesso && sr.stats) {
     const s = sr.stats;
     document.getElementById('statsRow').innerHTML = `
-      <div class="stat-card"><div class="stat-ic ic-b"><i class="fas fa-users"></i></div><div><div class="stat-lbl">Clientes</div><div class="stat-val">${s.clientes || 0}</div></div></div>
-      <div class="stat-card"><div class="stat-ic ic-g"><i class="fas fa-building"></i></div><div><div class="stat-lbl">Empresas</div><div class="stat-val">${s.afiliados || 0}</div></div></div>
-      <div class="stat-card"><div class="stat-ic ic-o"><i class="fas fa-dumpster"></i></div><div><div class="stat-lbl">Caçambas</div><div class="stat-val">${s.cacambas || 0}</div></div></div>
-      <div class="stat-card"><div class="stat-ic ic-p"><i class="fas fa-clipboard-list"></i></div><div><div class="stat-lbl">Pedidos</div><div class="stat-val">${s.pedidos || 0}</div></div></div>
+      <div class="stat-card" style="cursor:pointer;" onclick="document.querySelector('[data-page=clientes]').click()"><div class="stat-ic ic-b"><i class="fas fa-users"></i></div><div><div class="stat-lbl">Clientes</div><div class="stat-val">${s.clientes || 0}</div></div></div>
+      <div class="stat-card" style="cursor:pointer;" onclick="document.querySelector('[data-page=afiliados]').click()"><div class="stat-ic ic-g"><i class="fas fa-building"></i></div><div><div class="stat-lbl">Empresas</div><div class="stat-val">${s.afiliados || 0}</div></div></div>
+      <div class="stat-card" style="cursor:pointer;" onclick="document.querySelector('[data-page=cacambas]').click()"><div class="stat-ic ic-o"><i class="fas fa-dumpster"></i></div><div><div class="stat-lbl">Caçambas</div><div class="stat-val">${s.cacambas || 0}</div></div></div>
+      <div class="stat-card" style="cursor:pointer;" onclick="document.querySelector('[data-page=pedidos]').click()"><div class="stat-ic ic-p"><i class="fas fa-clipboard-list"></i></div><div><div class="stat-lbl">Pedidos</div><div class="stat-val">${s.pedidos || 0}</div></div></div>
       <div class="stat-card"><div class="stat-ic ic-r"><i class="fas fa-dollar-sign"></i></div><div><div class="stat-lbl">Receita Total</div><div class="stat-val">R$ ${(s.receita||0).toLocaleString('pt-BR')}</div></div></div>
     `;
   }
@@ -181,6 +184,44 @@ function filtrarAfiliados() {
   const q = document.getElementById('searchAfiliados').value.toLowerCase();
   renderAfiliados(_afiliados.filter(a =>
     (a.empresa || '').toLowerCase().includes(q) || (a.email || '').toLowerCase().includes(q)
+  ));
+}
+
+// ── CAÇAMBAS (PostgreSQL Neon) ───────────────────────
+async function carregarCacambas() {
+  const r = await AdminAPI.getCacambas();
+  if (!r.sucesso) { toast(r.erro || 'Erro ao carregar caçambas', true); return; }
+  _cacambas = r.cacambas || [];
+  const elCount = document.getElementById('countCacambas');
+  if (elCount) elCount.textContent = r.total || _cacambas.length;
+  renderCacambas(_cacambas);
+}
+
+function renderCacambas(lista) {
+  const elTb = document.getElementById('tbCacambas');
+  if (!elTb) return;
+  elTb.innerHTML = (lista && lista.length)
+    ? lista.map(c => `<tr>
+        <td><strong>${c.nome || 'Caçamba'}</strong></td>
+        <td><span class="badge" style="background:#e8f4fd;color:#0366d6;font-weight:700;">${c.tipo || 'obra'}</span></td>
+        <td>${c.capacidade || '—'}</td>
+        <td>${c.dimensoes || '—'}</td>
+        <td>${c.peso_max || '—'}</td>
+        <td><strong>R$ ${(c.preco || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong></td>
+        <td>${c.empresa || 'Empresa Parceira'}</td>
+        <td>${c.cidade || '—'}</td>
+        <td><span class="badge ${c.disponivel !== false ? 'ativo' : 'inativo'}">${c.disponivel !== false ? 'Disponível' : 'Indisponível'}</span></td>
+      </tr>`).join('')
+    : '<tr><td colspan="9" style="text-align:center;color:#bbb;padding:28px;">Nenhuma caçamba encontrada.</td></tr>';
+}
+
+function filtrarCacambas() {
+  const q = (document.getElementById('searchCacambas')?.value || '').toLowerCase();
+  renderCacambas(_cacambas.filter(c =>
+    (c.nome || '').toLowerCase().includes(q) ||
+    (c.tipo || '').toLowerCase().includes(q) ||
+    (c.empresa || '').toLowerCase().includes(q) ||
+    (c.cidade || '').toLowerCase().includes(q)
   ));
 }
 
@@ -462,6 +503,8 @@ async function executarDel() {
 
 function fecharDel() { document.getElementById('modalDel').classList.remove('open'); }
 // ── Init ─────────────────────────────────────────────
-atualizarStatusApi();
-carregarOverview();
+(async function init() {
+  await atualizarStatusApi();
+  await carregarOverview();
+})();
 

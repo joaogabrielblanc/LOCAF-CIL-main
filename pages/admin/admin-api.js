@@ -240,6 +240,33 @@ const AdminAPI = {
     return { sucesso: true };
   },
 
+  // ── Caçambas (Consulta no Neon PostgreSQL) ──────────
+  async getCacambas() {
+    if (window.ApiService) {
+      const res = await ApiService.getCacambas();
+      if (res && res.sucesso && Array.isArray(res.dados)) {
+        this.isApiMode = true;
+        const cacambas = res.dados.map(c => ({
+          id: c.id_cacamba,
+          nome: c.nome || 'Caçamba',
+          tipo: c.tipo || 'obra',
+          capacidade: c.capacidade || '—',
+          dimensoes: c.dimensoes || '—',
+          peso_max: c.peso_max || '—',
+          preco: parseFloat(c.preco || 0),
+          empresa: c.empresa_afiliado || 'Empresa Parceira',
+          cidade: c.cidade_afiliado || '—',
+          disponivel: c.disponivel !== false
+        }));
+        return { sucesso: true, total: res.total || cacambas.length, cacambas, fonte: 'API PostgreSQL' };
+      }
+    }
+
+    // Fallback localStorage
+    const cacambas = (typeof DB !== 'undefined') ? DB.getCacambas() : [];
+    return { sucesso: true, total: cacambas.length, cacambas, fonte: 'localStorage' };
+  },
+
   // ── Pedidos (Consulta complexa com 4 tabelas + Paginação)
   async getPedidos(page = 1, limit = 10, status = null, ordem = 'asc') {
     if (window.ApiService) {

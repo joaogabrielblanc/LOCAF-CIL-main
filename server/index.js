@@ -18,12 +18,7 @@ const app = express();
 // =====================================================
 
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost:5500',
-    'http://127.0.0.1:5500',
-    'http://localhost:3000',
-    'http://localhost:3001'
-  ],
+  origin: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -72,6 +67,9 @@ app.use(express.static(path.join(__dirname, '..')));
 // ROTAS DA API
 // =====================================================
 
+// Rotas do PostgreSQL Neon (Consultas complexas, Estatísticas e CRUD direto)
+app.use('/api', require('./routes/clientRoutes'));
+
 app.use('/api/auth', require('./routes/auth'));
 
 app.use('/api/clientes', require('./routes/clientes'));
@@ -83,8 +81,6 @@ app.use('/api/cacambas', require('./routes/cacambas'));
 app.use('/api/pedidos', require('./routes/pedidos'));
 
 app.use('/api/admin', require('./routes/admin'));
-
-app.use('/api', require('./routes/clientRoutes'));
 
 
 // =====================================================

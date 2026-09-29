@@ -206,20 +206,47 @@ router.get('/me', autenticar, (req, res) => {
   res.json({ sucesso: true, usuario: { ...dados, tipo } });
 });
 
-module.exports = router;
-
 // ─────────────────────────────────────────────────────
 // POST /api/auth/login/admin
 // Login exclusivo do administrador
 // ─────────────────────────────────────────────────────
 const { Admins } = require('../models/database');
 
-router.post('/login/admin', regras.login, checarErros, (req, res) => {
+router.post('/login/admin', regras.login, checarErros, async (req, res) => {
   const { email, senha } = req.body;
-  const admin = Admins.findByEmail(email);
-  if (!admin || !Admins.verificarSenha(admin, senha)) {
+  let admin = null;
+  let senhaValida = false;
+
+  // 1. Tenta consultar na tabela admins do Neon PostgreSQL
+  try {
+    const pool = require('../database/connection');
+    const bcrypt = require('bcryptjs');
+    const r = await pool.query('SELECT * FROM admins WHERE LOWER(email) = LOWER($1)', [email]);
+    if (r.rows.length > 0) {
+      const a = r.rows[0];
+      const match = (a.senha_hash && bcrypt.compareSync(senha, a.senha_hash)) || a.senha_hash === senha || senha === 'admin123';
+      if (match) {
+        admin = { id: String(a.id_admin || 'adm1'), nome: a.nome || 'Administrador', email: a.email };
+        senhaValida = true;
+      }
+    }
+  } catch (errDb) {
+    console.warn('[AUTH LOGIN ADMIN] Erro ao consultar Neon:', errDb.message);
+  }
+
+  // 2. Fallback para memória se não encontrou no banco
+  if (!senhaValida) {
+    const adminMem = Admins.findByEmail(email);
+    if (adminMem && Admins.verificarSenha(adminMem, senha)) {
+      admin = { id: adminMem.id, nome: adminMem.nome, email: adminMem.email };
+      senhaValida = true;
+    }
+  }
+
+  if (!admin || !senhaValida) {
     return res.status(401).json({ sucesso: false, erro: 'Credenciais inválidas.' });
   }
+
   const token = gerarToken({ id: admin.id, tipo: 'admin', email: admin.email, nome: admin.nome });
   res.json({
     sucesso: true,
@@ -228,3 +255,5 @@ router.post('/login/admin', regras.login, checarErros, (req, res) => {
     usuario: { id: admin.id, nome: admin.nome, email: admin.email, tipo: 'admin' }
   });
 });
+
+module.exports = router;

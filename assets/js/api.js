@@ -5,9 +5,19 @@
 // backend (porta 3001) ou por servidor externo/Live Server (ex: 5500).
 // ─────────────────────────────────────────────────────────────
 
-const API_BASE_URL = (window.location.port === '3001')
-  ? '/api'
-  : 'http://localhost:3001/api';
+// Detecta dinamicamente a URL base da API:
+// - Se window.API_BASE_URL estiver definido manualmente, usa-o.
+// - Se estiver no Live Server local (ex: porta 5500) ou abrindo direto por arquivo (file:), aponta para o backend local (porta 3001).
+// - Se estiver na Vercel (produção/preview) ou rodando direto pelo backend Express (porta 3001), usa '/api'.
+const isFileProtocol = window.location.protocol === 'file:';
+const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const isLiveServer = isLocalDev && window.location.port !== '3001' && window.location.port !== '';
+
+const API_BASE_URL = window.API_BASE_URL || (
+  (isLiveServer || isFileProtocol)
+    ? 'http://localhost:3001/api'
+    : '/api'
+);
 
 const ApiService = {
   baseUrl: API_BASE_URL,

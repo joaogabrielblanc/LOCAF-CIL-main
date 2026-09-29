@@ -16,6 +16,7 @@ router.get('/clientes/consulta/:id', ClientController.buscarClientePorId);
 router.get('/consulta-clientes/:id', ClientController.buscarClientePorId);
 
 // 3. Caçambas (Geral e por ID)
+router.get('/cacambas', ClientController.buscarCacambas);
 router.get('/cacambas/consulta', ClientController.buscarCacambas);
 router.get('/consulta-cacambas', ClientController.buscarCacambas);
 router.get('/cacambas/consulta/:id', ClientController.buscarCacambaPorId);
@@ -28,6 +29,7 @@ router.get('/afiliados/consulta/:id', ClientController.buscarAfiliadoPorId);
 router.get('/consulta-afiliados/:id', ClientController.buscarAfiliadoPorId);
 
 // 5. Estatísticas e Relatório Geral do Banco
+router.get('/estatisticas', ClientController.buscarEstatisticas);
 router.get('/estatisticas/consulta', ClientController.buscarEstatisticas);
 router.get('/consulta-estatisticas', ClientController.buscarEstatisticas);
 

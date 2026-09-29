@@ -20,6 +20,7 @@
     <button class="nav-item active" data-page="overview"  onclick="nav(this)"><i class="fas fa-chart-pie"></i><span>Visão Geral</span></button>
     <button class="nav-item"        data-page="clientes"  onclick="nav(this)"><i class="fas fa-users"></i><span>Clientes</span></button>
     <button class="nav-item"        data-page="afiliados" onclick="nav(this)"><i class="fas fa-building"></i><span>Empresas</span></button>
+    <button class="nav-item"        data-page="cacambas"  onclick="nav(this)"><i class="fas fa-dumpster"></i><span>Caçambas</span></button>
     <button class="nav-item"        data-page="pedidos"   onclick="nav(this)"><i class="fas fa-clipboard-list"></i><span>Pedidos</span></button>
     <button class="nav-item"        data-page="banco"     onclick="nav(this)"><i class="fas fa-database"></i><span>Banco de Dados</span></button>
     <button class="nav-item"        onclick="location.href='../../index.html'"><i class="fas fa-home"></i><span>Ver Site</span></button>
@@ -87,6 +88,25 @@
         <thead><tr><th>Empresa</th><th>CNPJ</th><th>E-mail</th><th>Cidade/UF</th><th>Caçambas</th><th>Pedidos</th><th>Cadastro</th><th>Status</th><th>Ações</th></tr></thead>
         <tbody id="tbAfiliados"></tbody>
       </table>
+    </div>
+  </section>
+
+  <!-- ── CAÇAMBAS ── -->
+  <section class="page" id="page-cacambas">
+    <div class="page-hd">
+      <h1>Caçambas <span class="count-badge" id="countCacambas"></span></h1>
+      <p>Todas as caçambas cadastradas pelas empresas parceiras no PostgreSQL (Neon).</p>
+    </div>
+    <div class="toolbar">
+      <input type="text" class="search-input" id="searchCacambas" placeholder="Buscar por modelo, tipo, empresa ou cidade..." oninput="filtrarCacambas()">
+    </div>
+    <div class="panel">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Caçamba</th><th>Tipo</th><th>Capacidade</th><th>Dimensões</th><th>Peso Máx</th><th>Preço</th><th>Empresa Parceira</th><th>Cidade</th><th>Status</th></tr></thead>
+          <tbody id="tbCacambas"></tbody>
+        </table>
+      </div>
     </div>
   </section>
 

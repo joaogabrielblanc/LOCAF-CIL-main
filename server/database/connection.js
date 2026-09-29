@@ -16,7 +16,7 @@ const isNeon = connectionString && connectionString.includes('neon.tech');
 const pool = new Pool({
   connectionString,
   ssl: isNeon ? { rejectUnauthorized: false } : undefined,
-  connectionTimeoutMillis: 2000
+  connectionTimeoutMillis: 10000
 });
 
 module.exports = pool;
